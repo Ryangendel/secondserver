@@ -1,0 +1,21 @@
+{
+  "name": "secondserver",
+  "version": "0.0.1",
+  "description": "the best server around",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "key",
+    "word",
+    "here"
+  ],
+  "author": "ryan gendel",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "give-me-a-joke": "^0.5.1"
+  }
+}
