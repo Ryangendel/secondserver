@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>all dogs</h1>
+    <div id="alldogs"></div>
+    <script>
+        fetch("/products")
+        .then(data=>data.json())
+        .then(cleanedData=>{
+            var html=""
+            for (let i = 0; i < cleanedData.length; i++) {
+                    html = html + `<div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="${cleanedData[i].picture}" alt="Card image cap">
+                    <div class="card-body">
+                    <h5 class="card-title">${cleanedData[i].name}e</h5>
+                    <p class="card-text">${cleanedData[i].id}</p>
+                    <a href="/individualdog/${cleanedData[i].id}" class="btn btn-primary">Go somewhere</a>
+                 </div>
+                </div>`
+        }
+        document.getElementById("alldogs").innerHTML = html
+    })
+    </script>
+</body>
+</html>

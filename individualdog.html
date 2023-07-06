@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>individualdog</h1>
+    <div id="dog"></div>
+
+    <script>
+        var url = window.location.pathname
+        var id = url.split("/")[2]
+        fetch(`/products/${id}`)
+        .then(data=>data.json())
+        .then(cleanedData=>{
+            console.log(cleanedData)
+            var html  = `<div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="${cleanedData.picture}" alt="Card image cap">
+                    <div class="card-body">
+                    <h5 id="dogName" class="card-title">${cleanedData.name}e</h5>
+                    <p class="card-text">${cleanedData.id}</p>
+                    <a href="/individualdog/${cleanedData.id}" class="btn btn-primary">Go somewhere</a>
+                 </div>
+                </div>`
+                document.getElementById("dog").innerHTML = html
+                addClickEvent()
+        })
+
+
+        function addClickEvent(){
+
+        document.getElementById("dogName").addEventListener("click",(()=>{
+                var newName = prompt("Enter new name")     
+                // var myHeaders = new Headers();
+
+                // myHeaders.append("Content-Type", "application/json");
+                var options = {method:"PUT", body:{name:newName}, headers:{"Content-Type": "application/json"}}
+                var d = JSON.stringify(options)
+                fetch(`/products/${id}`,d)
+                .then(data=>data.json())
+                .then(cleanedData=>{
+                    console.log(cleanedData)
+                    console.log("SUCCESS")
+                })
+        }))
+    }
+    </script>
+</body>
+</html>
