@@ -1,11 +1,51 @@
+const { MongoClient } = require('mongodb');
 const express = require("express")
 var bodyParser = require('body-parser');
 const app = express()
 const PORT = process.env.PORT || 3001
 const path = require("path")
 const fs = require('fs');
+const mongoose = require("mongoose")
+// var ObjectId = require('mongodb').ObjectId;
+const Dog = require("./models/Dogs")
+
+mongoose.connect(
+    process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/dogs_db',
+    {
+      useNewUrlParser: true, 
+      useUnifiedTopology: true,
+    }
+  );
 
 // calling body-parser to handle the Request Object from POST requests
+//mongodb+srv://ryangendel:P@ssword!@cluster1.xupjqjl.mongodb.net/?retryWrites=true&w=majority
+// const url = process.env.MONGO_URI ||'mongodb://localhost:27017';
+// const client = new MongoClient(url);
+// const dbName = 'dogs_db';
+
+
+//=========================
+
+// async function main() {
+//     // Use connect method to connect to the server
+//     await client.connect();
+//     console.log('Connected successfully to server');
+//     const db = client.db(dbName);
+//     const collection = db.collection('documents');
+  
+//     // the following code examples can be pasted here...
+  
+//     return 'done.';
+//   }
+  
+//   main()
+//     .then(console.log)
+//     .catch(console.error)
+//     .finally(() => client.close());
+  
+
+//=========================
+
 
 // parse application/json, basically parse incoming Request Object as a JSON Object 
 app.use(bodyParser.json());
@@ -63,11 +103,9 @@ function checkIfLoggedInPost(req, res, next){
 // console.log("----------------")
 
 app.get("/", (req, res)=>{
-    res.sendFile(path.join(__dirname,'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 })
-console.log("-----------")
-console.log(path.join(__dirname, ".."))
-console.log("-----------")
+
 
 app.get("/aboutus", (req, res)=>{
     res.sendFile(path.join(__dirname, 'aboutus.html'));
@@ -82,49 +120,64 @@ app.get("/alldogs", (req, res)=>{
     res.sendFile(path.join(__dirname, 'alldogs.html'));
 })
 
-app.get("/products/:id", (req, res)=>{ 
-    //products/all/asc
-    console.log("-----------")
-    let chosenDog = {}
-    for (let i = 0; i < db.length; i++) {
-        if(req.params.id == db[i].id){
-            chosenDog = db[i]
-        }
-      }
+app.get("/products/:id", async (req, res)=>{ 
+    await client.connect();
+    const db = client.db(dbName);
+    const collection = db.collection('dogs');
+    const chosenDog = await collection.find({"_id": new ObjectId(req.params.id)}).toArray();
     res.json(chosenDog)
 })
 //CRUD
 //TYPEDEF(QUERY(G), MUTATIONS(CUD)) RESOLVERS
-app.get("/products", (req, res)=>{ 
-    res.json(db)
+app.get("/products", async (req, res)=>{ 
+    //BELOW IS WITH THE MONGOOSE DRIVER
+    Dog.find({})
+    .then(alldogs =>{
+        res.json(alldogs)
+    })
+
+    //BELOW IS WITH THE MONGO DRIVER
+    // await client.connect();
+    // const db = client.db(dbName);
+    // const collection = db.collection('dogs');
+    // const findResult = await collection.find({name:"Runa"}).toArray();
 })
 
 app.post("/products", (req, res)=>{
     
-    const newEntry ={
-    name:req.body.data.name,
-    caretaker: req.body.data.caretaker,
-    age:req.body.data.age,
-    // id:req.body.data.id,
-    password:req.body.data.passoword,
-    }
+    // const newEntry ={
+    // name:req.body.data.name,
+    // caretaker: req.body.data.caretaker,
+    // age:req.body.data.age,
+    // password:req.body.data.passoword,
+    // }
 
 
-  console.log("INSIDE RIGHT ROUTE")
-    //all sorts of logic here!!!
-var string = JSON.stringify(newEntry)
-    fs.appendFile("./dogs.js", "var y ='hello'", (err) => {
-        if (err)
-          console.log(err);
-        else {
-          console.log("File written successfully\n");
-          console.log("The written has the following contents:");
-          console.log(fs.readFileSync("books.txt", "utf8"));
-        }
-      });
+//   console.log("INSIDE RIGHT ROUTE")
+  
+// var string = JSON.stringify(newEntry)
+//     fs.appendFile("./dogs.js", "var y ='hello'", (err) => {
+//         if (err)
+//           console.log(err);
+//         else {
+//           console.log("File written successfully\n");
+//           console.log("The written has the following contents:");
+//           console.log(fs.readFileSync("books.txt", "utf8"));
+//         }
+//       });
 
 
-    db.push(newEntry)
+//     db.push(newEntry)
+
+console.log(req.body)
+    
+   Dog.create(req.body)
+   .then(returnedData=>{
+    console.log(returnedData)
+   }).catch(err=>{
+    console.log(err)
+   })
+
     res.json(db)
 })
 

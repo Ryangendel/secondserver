@@ -10,6 +10,12 @@
     <h1>all dogs</h1>
     <div id="alldogs"></div>
     <script>
+
+        //CRUD
+        //C=>insertOne
+        //R=>find
+        //
+
         fetch("/products")
         .then(data=>data.json())
         .then(cleanedData=>{
